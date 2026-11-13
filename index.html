@@ -12,6 +12,9 @@
 <x-dc>
 <helmet>
 <style>
+@keyframes cvIn { from { opacity:0; transform:scale(.985); } to { opacity:1; transform:none; } }
+</style>
+<style>
 :root{--cvbg:rgba(9,11,13,.93);}[data-theme="light"]{--cvbg:rgba(232,237,242,.93);}
 </style>
 <style>
@@ -313,14 +316,14 @@
         <sc-for list="{{ cvDots }}" as="dd" hint-placeholder-count="7"><button role="tab" aria-selected="{{ dd.on }}" aria-label="{{ dd.title }}" title="{{ dd.title }}" onClick="{{ dd.onPick }}" style="{{ dd.style }}"></button></sc-for>
       </div>
       <sc-for list="{{ cvCards }}" as="cc" hint-placeholder-count="3">
-        <div onClick="{{ cc.onPick }}" aria-hidden="{{ cc.hidden }}" style="position:absolute; left:50%; top:calc(50% + 22px); width:min(940px, 74vw, calc((100vh - 240px) * 1.62)); background:var(--t-131517); border:1px solid var(--t-2f4753); border-radius:20px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,.22); transition:transform .7s cubic-bezier(.34,1.38,.52,1), opacity .45s ease, filter .45s ease; {{ cc.style }}">
+        <div onClick="{{ cc.onPick }}" aria-hidden="{{ cc.hidden }}" style="position:absolute; left:50%; top:calc(50% + 22px); width:min(940px, 74vw, calc((100vh - 240px) * 1.62)); background:var(--t-131517); border:1px solid var(--t-2f4753); border-radius:20px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,.22); transition:transform .55s cubic-bezier(.22,1.12,.36,1), opacity .4s ease, filter .4s ease; {{ cc.style }}">
           <div style="display:flex; align-items:center; gap:10px; height:48px; box-sizing:border-box; padding:0 18px; border-bottom:1px solid var(--t-23282d)">
             <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--t-0f1113); background:{{ cc.col }}; border-radius:6px; padding:2px 7px">{{ cc.n }}</span>
             <span style="font-size:17px; font-weight:700; color:var(--t-efede8)">{{ cc.title }}</span>
             <sc-if value="{{ cc.noTabs }}"><span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--t-7f8a91)">{{ cc.part }}</span></sc-if>
             <sc-if value="{{ cc.hasTabs }}"><div role="tablist" aria-label="Interviews" style="margin-left:auto; display:flex; gap:5px; flex-wrap:nowrap"><sc-for list="{{ cc.tabs }}" as="ct" hint-placeholder-count="5"><button role="tab" aria-selected="{{ ct.on }}" onClick="{{ ct.onPick }}" style="{{ ct.style }}">{{ ct.label }}</button></sc-for></div></sc-if>
           </div>
-          <img src="{{ cc.img }}" alt="{{ cc.title }}" draggable="false" style="display:block; width:100%; aspect-ratio:1.62; object-fit:cover; object-position:top center; background:var(--t-0f1214)">
+          <img src="{{ cc.img }}" alt="{{ cc.title }}" draggable="false" style="display:block; width:100%; aspect-ratio:1.62; object-fit:cover; object-position:top center; background:var(--t-0f1214); transition:opacity .25s ease; {{ cc.imgSt }}">
           <div style="display:flex; align-items:center; gap:14px; height:60px; box-sizing:border-box; padding:0 18px">
             <span style="font-size:15px; line-height:1.35; color:var(--t-d5dde2); flex:1; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical">{{ cc.say }}</span>
             <button onClick="{{ cc.onLive }}" style="flex:0 0 auto; background:var(--t-8fcbea); color:var(--t-0f1113); border:none; border-radius:9px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer">Open the live view ↗</button>
@@ -1710,9 +1713,15 @@
                     <sc-for list="{{ stakeLenses }}" as="l" hint-placeholder-count="3">
                       <button onClick="{{ l.onPick }}" style="{{ l.style }}">{{ l.label }}</button>
                     </sc-for>
+                    <div role="group" aria-label="Zoom" style="margin-left:auto; display:flex; align-items:center; gap:6px">
+                      <button onClick="{{ onStakeOut }}" aria-label="Zoom out" style="border:1px solid var(--t-2c3238); background:var(--t-141719); color:var(--t-a7b2b9); border-radius:8px; width:28px; height:28px; font-family:inherit; font-size:14px; cursor:pointer">−</button>
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--t-8b949b); min-width:40px; text-align:center">{{ stakeZoomLabel }}</span>
+                      <button onClick="{{ onStakeIn }}" aria-label="Zoom in" style="border:1px solid var(--t-2c3238); background:var(--t-141719); color:var(--t-a7b2b9); border-radius:8px; width:28px; height:28px; font-family:inherit; font-size:14px; cursor:pointer">+</button>
+                      <button onClick="{{ onStakeFit }}" style="border:1px solid var(--t-2c3238); background:var(--t-141719); color:var(--t-8b949b); border-radius:999px; padding:5px 11px; font-family:inherit; font-size:11px; cursor:pointer">Fit</button>
+                    </div>
                   </div>
 
-                  <div style="position:relative; width:{{ stakeBoxW }}; margin:0 auto; aspect-ratio:1; min-width:{{ stakeMinW }}; background:var(--t-12171a); border:1px solid var(--t-232a2f); border-radius:12px; overflow:hidden">
+                  <div style="overflow:auto; max-height:{{ stakeWrapH }}; border-radius:12px"><div style="position:relative; width:{{ stakeBoxW }}; margin:0 auto; aspect-ratio:1; min-width:{{ stakeMinW }}; background:var(--t-12171a); border:1px solid var(--t-232a2f); border-radius:12px; overflow:hidden">
                     <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none">
                       <defs>
                         <marker id="stakeArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--t-5c676e)"></path></marker>
@@ -1747,7 +1756,7 @@
                     </div>
                     <button onClick="{{ onPickBiz }}" style="{{ bizLabelStyle }}">The business<br>ecosystem</button>
                     <button onClick="{{ onPickEng }}" style="{{ engLabelStyle }}">The engineering<br>ecosystem</button>
-                  </div>
+                  </div></div>
 
                   <sc-if value="{{ hasStakeSel }}">
                     <div style="border:1px solid var(--t-2a3a44); background:var(--t-14191d); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:7px">
@@ -4917,7 +4926,7 @@ class Component extends DCLogic {
     const it = this.cvItems[sec][i];
     this.setState({ cv: { sec, i }, cvShow: false });
     clearTimeout(this.cvT);
-    if (sec === 'r' && it.live) this.cvT = setTimeout(() => { if (this.state.cv && this.state.cv.sec === 'r' && this.state.cv.i === i) this.setState({ mode: 'chat', projectView: false, present: false, panel: true, full: false, expanded: false, openId: it.live, tourStep: 0, vennSel: 'core', plSel: null, cvShow: true }); if (it.live === 'stakemap') [140, 360].forEach(ms => setTimeout(() => { const sec = document.querySelector('section'); const lab = sec && Array.from(sec.querySelectorAll('span')).find(x => x.textContent.trim() === 'Lens'); const row = lab && lab.parentElement; let sc = row && row.parentElement; while (sc && sc !== sec && !(sc.scrollHeight > sc.clientHeight + 4 && /auto|scroll/.test(getComputedStyle(sc).overflowY))) sc = sc.parentElement; if (row && sc) sc.scrollTop += row.getBoundingClientRect().top - sc.getBoundingClientRect().top - 10; }, ms)); }, 560);
+    if (sec === 'r' && it.live) this.cvT = setTimeout(() => { if (this.state.cv && this.state.cv.sec === 'r' && this.state.cv.i === i) this.setState({ mode: 'chat', projectView: false, present: false, panel: true, full: false, expanded: false, openId: it.live, tourStep: 0, vennSel: 'core', plSel: null, cvShow: true, stakeZoom: 1, ...(it.live === 'ecomap' ? { ecoZoom: Math.max(0.12, Math.min(0.4, Math.round((Math.min(940, window.innerWidth * 0.74, (window.innerHeight - 240) * 1.62) / 1.62 - 240) / 2200 * 100) / 100)) } : {}) }); if (it.live === 'stakemap' || it.live === 'ecomap') [140, 360].forEach(ms => setTimeout(() => { const sec = document.querySelector('section'); const lab = sec && Array.from(sec.querySelectorAll('span')).find(x => x.textContent.trim() === (it.live === 'ecomap' ? 'Phase' : 'Lens')); const row = lab && lab.parentElement; let sc = row && row.parentElement; while (sc && sc !== sec && !(sc.scrollHeight > sc.clientHeight + 4 && /auto|scroll/.test(getComputedStyle(sc).overflowY))) sc = sc.parentElement; if (row && sc) sc.scrollTop += row.getBoundingClientRect().top - sc.getBoundingClientRect().top - 10; }, ms)); }, 430);
   }
   cvGo(d) { const c = this.state.cv; if (!c) return; const n = this.cvItems[c.sec].length; this.cvOpen(c.sec, ((c.i + d) % n + n) % n); }
   cvShut() { clearTimeout(this.cvT); this.setState({ cv: null, cvShow: false, panel: false, full: false }); }
@@ -4946,7 +4955,7 @@ class Component extends DCLogic {
       const tabs = d === 0 && it.tabs ? it.tabs.map(([id, label]) => { const on = this.state.openId === id && this.state.cvShow; return { label, on,
         onPick: ev => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ openId: id, panel: true, cvShow: true }); },
         style: 'border-radius:999px; padding:4px 10px; font-family:inherit; font-size:12px; font-weight:600; white-space:nowrap; cursor:pointer; ' + (on ? 'background:var(--t-8fcbea); color:var(--t-0f1113); border:1px solid transparent' : 'background:transparent; color:var(--t-a9b4bb); border:1px solid var(--t-2a3036)') }; }) : [];
-      return { hasTabs: tabs.length > 0, noTabs: !tabs.length, tabs, n: String(k + 1).padStart(2, '0'), title: it.title, say: it.say, img: this.snapImgs[it.k], part: part[C.sec], col: col[C.sec], style: tf, hidden: d !== 0,
+      return { imgSt: d === 0 && C.sec === 'r' && it.live ? 'opacity:0' : 'opacity:1', hasTabs: tabs.length > 0, noTabs: !tabs.length, tabs, n: String(k + 1).padStart(2, '0'), title: it.title, say: it.say, img: this.snapImgs[it.k], part: part[C.sec], col: col[C.sec], style: tf, hidden: d !== 0,
         onPick: () => { if (d) this.cvGo(d); }, onLive: ev => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.cvLive(C.sec, it); } };
     });
     return {
@@ -6668,7 +6677,12 @@ class Component extends DCLogic {
       ...this.demoVals(),
       ...this.leadVals(),
       ...this.cvVals(),
-      stakeBoxW: this.state.cv && this.state.cv.sec === 'r' ? 'min(100%, calc(min(940px, 74vw, calc((100vh - 240px) * 1.62)) / 1.62 - 122px))' : '100%',
+      stakeBoxW: (() => { const z = this.state.stakeZoom || 1; return this.state.cv && this.state.cv.sec === 'r' ? (z === 1 ? 'min(100%, calc(min(940px, 74vw, calc((100vh - 240px) * 1.62)) / 1.62 - 122px))' : 'calc((min(100%, calc(min(940px, 74vw, calc((100vh - 240px) * 1.62)) / 1.62 - 122px))) * ' + z + ')') : (z * 100) + '%'; })(),
+      stakeWrapH: this.state.cv && this.state.cv.sec === 'r' ? 'calc(min(940px, 74vw, calc((100vh - 240px) * 1.62)) / 1.62 - 116px)' : 'none',
+      stakeZoomLabel: Math.round((this.state.stakeZoom || 1) * 100) + '%',
+      onStakeIn: () => this.setState(st => ({ stakeZoom: Math.min(3, Math.round(((st.stakeZoom || 1) + 0.25) * 100) / 100) })),
+      onStakeOut: () => this.setState(st => ({ stakeZoom: Math.max(0.5, Math.round(((st.stakeZoom || 1) - 0.25) * 100) / 100) })),
+      onStakeFit: () => this.setState({ stakeZoom: 1 }),
       stakeMinW: this.state.cv && this.state.cv.sec === 'r' ? '0' : '340px',
       showDoor: !!this.state.door,
       onDoor: () => this.setState({ door: true }),
@@ -6722,7 +6736,7 @@ class Component extends DCLogic {
       },
       onToggleExpand: () => this.setState(s => ({ expanded: !s.expanded })),
       panelStyle: this.state.cv && this.state.cv.sec === 'r' && this.state.cvShow
-        ? 'position:fixed; --cw:min(940px, 74vw, calc((100vh - 240px) * 1.62)); left:calc(50% - var(--cw) / 2); width:var(--cw); top:calc(50% + 22px - (var(--cw) / 1.62 + 108px) / 2 + 48px); height:calc(var(--cw) / 1.62); z-index:59; background:var(--t-0f1113); display:flex; flex-direction:column; overflow:hidden; animation:dcFade .3s ease both'
+        ? 'position:fixed; --cw:min(940px, 74vw, calc((100vh - 240px) * 1.62)); left:calc(50% - var(--cw) / 2); width:var(--cw); top:calc(50% + 22px - (var(--cw) / 1.62 + 108px) / 2 + 48px); height:calc(var(--cw) / 1.62); z-index:59; background:var(--t-0f1113); display:flex; flex-direction:column; overflow:hidden; animation:cvIn .32s ease both'
         : this.state.full
         ? 'position:fixed; inset:0; width:auto; z-index:80; background:var(--t-0f1113); display:flex; flex-direction:column; animation:dcFade .25s ease both'
         : this.state.expanded
@@ -6825,10 +6839,10 @@ class Component extends DCLogic {
       colWidth: colW + 'px',
       ecoNodes, ecoPhaseArcs, ecoLinks,
       ecoZoomStyle: 'position:relative; width:2200px; height:2200px; transform:scale(' + (this.state.ecoZoom || 0.4) + '); transform-origin:top left',
-      ecoWrapStyle: 'width:' + (2200 * (this.state.ecoZoom || 0.4) + 10) + 'px; height:' + (2200 * (this.state.ecoZoom || 0.4) + 10) + 'px',
+      ecoWrapStyle: 'width:' + (2200 * (this.state.ecoZoom || 0.4) + 10) + 'px; height:' + (2200 * (this.state.ecoZoom || 0.4) + 10) + 'px; margin:0 auto',
       ecoZoomLabel: Math.round((this.state.ecoZoom || 0.4) * 100) + '%',
-      onZoomIn: () => this.setState(s => ({ ecoZoom: Math.min(1.4, (s.ecoZoom || 0.4) + 0.15) })),
-      onZoomOut: () => this.setState(s => ({ ecoZoom: Math.max(0.25, (s.ecoZoom || 0.4) - 0.15) })),
+      onZoomIn: () => this.setState(s => ({ ecoZoom: Math.min(1.4, Math.round(((s.ecoZoom || 0.4) + 0.05) * 100) / 100) })),
+      onZoomOut: () => this.setState(s => ({ ecoZoom: Math.max(0.12, Math.round(((s.ecoZoom || 0.4) - 0.05) * 100) / 100) })),
       onZoomReset: () => this.setState({ ecoZoom: 0.4 }),
       ecoZoomVal: this.state.ecoZoom || 0.4, onZoomSlide: e => this.setState({ ecoZoom: parseFloat(e.target.value) }),
       hasEcoSel: !!selNodeEco,
